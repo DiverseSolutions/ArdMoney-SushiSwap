@@ -1,0 +1,28 @@
+@startuml sushiswap
+
+package "Sushiswap Components" as SushiSwapComponents {
+    component [Sushi Onsen] as YieldFarming
+    note top of YieldFarming: Yield Farming Protocol
+
+    component [Sushi Stake - xSushi] as Stake
+    note top of Stake: earn xSUSHI tokens
+
+    component [Kashi] as Lending
+    note bottom of Lending: Lending & Borrowing & Margin Trading Platform 
+
+    component [BentoBox] as Vault
+    note top of Vault: Central Token Vault
+
+    component [Miso] as LaunchPad
+    note top of LaunchPad: MultiChain LaunchPad
+
+    component [Governance] as Governance
+
+    interface "Forum" as forum
+    interface "Snapshot" as snapshot
+
+    Governance --> forum
+    Governance --> snapshot
+}
+
+@enduml
