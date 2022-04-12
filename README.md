@@ -1,0 +1,3 @@
+Deploying contracts with the account: 0x1B25869d7C9161ec5e548DB750539B3a9DbdDAF4
+UniswapV2Factory deployed address: 0x2B33C4f5D1b3688e093A64fE9B6E9795bACE6E5A
+UniswapV2Router02 deployed address: 0xc49082286b2150449978B701084D48d9Fcd85207

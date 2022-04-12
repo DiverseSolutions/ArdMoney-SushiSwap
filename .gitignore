@@ -11,3 +11,5 @@ artifacts
 .DS_Store
 .undodir
 .mnkhodVimWorkspace.vim
+
+.env
