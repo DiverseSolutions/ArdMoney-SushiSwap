@@ -9,5 +9,5 @@ cache
 artifacts
 
 .DS_Store
-.undordir
+.undodir
 .mnkhodVimWorkspace.vim
