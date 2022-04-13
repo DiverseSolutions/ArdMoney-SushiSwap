@@ -59,6 +59,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             }
         }
     }
+
     function addLiquidity(
         address tokenA,
         address tokenB,
@@ -75,6 +76,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
         liquidity = IUniswapV2Pair(pair).mint(to);
     }
+
     function addLiquidityETH(
         address token,
         uint amountTokenDesired,
@@ -222,6 +224,12 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             );
         }
     }
+
+    /// @param amountIn Amount Of TokenA Willing To Swap For
+    /// @param amountOutMin Minimum amount out TokenB willing to take
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapExactTokensForTokens(
         uint amountIn,
         uint amountOutMin,
@@ -236,6 +244,12 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         );
         _swap(amounts, path, to);
     }
+
+    /// @param amountOut Amount Of TokenB To Expect
+    /// @param amountInMax Max Of Amount Of TokenA Willing To Trade For
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapTokensForExactTokens(
         uint amountOut,
         uint amountInMax,
@@ -250,6 +264,12 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         );
         _swap(amounts, path, to);
     }
+
+    /// @param dev Payable function henceforth sending ether for TokenA
+    /// @param amountOutMin Minimum Amount Of TokenA Willing To Take
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
         external
         virtual
@@ -265,6 +285,14 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         assert(IWETH(WETH).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
         _swap(amounts, path, to);
     }
+
+
+    /// @param dev Give Token and Take Ether
+    /// @param amountOut Amount Of Ether Willing To Take
+    /// @param amountInMax ??? 
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
         external
         virtual
@@ -282,6 +310,13 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
+
+    /// @param dev Give Token and Take Ether
+    /// @param amountIn Amount of token willing to swap for
+    /// @param amountOutMin Minimum amount of ether willing to take
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         external
         virtual
@@ -299,6 +334,12 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
+
+    /// @param dev Give Ether and Take Token - Henceforth function payable
+    /// @param amountOut Amount Of Token wanting to take 
+    /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
+    /// @param to user address
+    /// @param deadline epoch timestamp deadline - https://www.epochconverter.com/
     function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
         external
         virtual
