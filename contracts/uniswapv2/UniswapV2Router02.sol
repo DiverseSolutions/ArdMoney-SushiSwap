@@ -265,7 +265,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         _swap(amounts, path, to);
     }
 
-    /// @param dev Payable function henceforth sending ether for TokenA
+    /// @dev Payable function henceforth sending ether for TokenA
     /// @param amountOutMin Minimum Amount Of TokenA Willing To Take
     /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
     /// @param to user address
@@ -287,7 +287,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     }
 
 
-    /// @param dev Give Token and Take Ether
+    /// @dev Give Token and Take Ether
     /// @param amountOut Amount Of Ether Willing To Take
     /// @param amountInMax ??? 
     /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
@@ -311,7 +311,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
 
-    /// @param dev Give Token and Take Ether
+    /// @dev Give Token and Take Ether
     /// @param amountIn Amount of token willing to swap for
     /// @param amountOutMin Minimum amount of ether willing to take
     /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
@@ -335,7 +335,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
     }
 
-    /// @param dev Give Ether and Take Token - Henceforth function payable
+    /// @dev Give Ether and Take Token - Henceforth function payable
     /// @param amountOut Amount Of Token wanting to take 
     /// @param path array of pair address , Ex: TokenA swap for TokenC route would be [TokenA/TokenB Pair Address,TokenB/TokenC Pair Address]
     /// @param to user address
