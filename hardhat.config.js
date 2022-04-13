@@ -21,6 +21,9 @@ module.exports = {
   defaultNetwork: 'mumbai',
   networks: {
     hardhat: {},
+    ganache: {
+      url: "http://127.0.0.1:7545",
+    },
     mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com',
       accounts: [process.env.PRIVATE_KEY],
