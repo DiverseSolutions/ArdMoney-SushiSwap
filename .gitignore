@@ -7,9 +7,4 @@ typechain
 #Hardhat files
 cache
 artifacts
-
-.DS_Store
-.undodir
-.mnkhodVimWorkspace.vim
-
-.env
+build
