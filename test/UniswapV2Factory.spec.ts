@@ -33,7 +33,7 @@ describe("UniswapV2Factory", () => {
   });
 
   async function createPair(tokens: [string, string]) {
-    const bytecode = `0x${UniswapV2Pair.bytecode}`;
+    const bytecode = `${UniswapV2Pair.bytecode}`;
     const create2Address = getCreate2Address(factory.address, tokens, bytecode);
     await expect(factory.createPair(...tokens))
       .to.emit(factory, "PairCreated")
