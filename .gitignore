@@ -8,3 +8,7 @@ typechain
 cache
 artifacts
 build
+
+.DS_Store
+.mnkhodVimWorkspace.vim
+.undodir

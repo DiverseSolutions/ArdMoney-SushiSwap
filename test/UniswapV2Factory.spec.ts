@@ -106,10 +106,7 @@ const overrides = {
   gasLimit: 9999999,
 };
 
-export async function factoryFixture(
-  [wallet]: Wallet[],
-  _: Web3Provider
-): Promise<FactoryFixture> {
+export async function factoryFixture( [wallet]: Wallet[], _: Web3Provider): Promise<FactoryFixture> {
   const factory = await deployContract(
     wallet,
     UniswapV2Factory,
