@@ -28,27 +28,35 @@ const config: HardhatUserConfig = {
     artifacts: "./build",
   },
   solidity: {
-    version: "0.6.12",
-    settings: {
-      outputSelection: {
-        "*": {
-          "*": [
-            "evm.bytecode.object",
-            "evm.deployedBytecode.object",
-            "abi",
-            "evm.bytecode.sourceMap",
-            "evm.deployedBytecode.sourceMap",
-            "metadata",
-          ],
-          "": ["ast"],
+    compilers: [
+      {
+        version: "0.6.12",
+        settings: {
+          outputSelection: {
+            "*": {
+              "*": [
+                "evm.bytecode.object",
+                "evm.deployedBytecode.object",
+                "abi",
+                "evm.bytecode.sourceMap",
+                "evm.deployedBytecode.sourceMap",
+                "metadata",
+              ],
+              "": ["ast"],
+            },
+          },
+          evmVersion: "istanbul",
+          optimizer: {
+            enabled: true,
+            runs: 999999,
+          },
         },
       },
-      evmVersion: "istanbul",
-      optimizer: {
-        enabled: true,
-        runs: 999999,
+      {
+        version: "0.8.4",
+        settings: { },
       },
-    },
+    ],
   },
   networks: {
     ropsten: {
