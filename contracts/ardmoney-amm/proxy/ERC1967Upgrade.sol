@@ -5,7 +5,7 @@ pragma solidity ^0.8.2;
 
 import "./IBeacon.sol";
 import "./IERC1822Proxiable.sol";
-import "./Address.sol";
+import "../utils/Address.sol";
 import "./StorageSlot.sol";
 
 /**
