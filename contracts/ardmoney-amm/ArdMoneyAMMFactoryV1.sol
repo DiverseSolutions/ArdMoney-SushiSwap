@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.6.12;
 
-import "./UniswapV2Factory.sol";
-import "./UniswapV2Router02.sol";
+import "./StandardUniswapV2Factory.sol";
+import "./StandardUniswapV2Router02.sol";
 
 contract ArdMoneyAMMFactoryV1 {
   mapping(string => bool) public booleanMap;
@@ -17,8 +17,8 @@ contract ArdMoneyAMMFactoryV1 {
     require(addressMap["PoolFactoryOwner"] != address(0),"ARDMONEY : No Pool Factory Owner Detected!");
     require(addressMap["PoolFactoryOwner"] == msg.sender,"ARDMONEY : Not Pool Factory Owner!");
 
-    UniswapV2Factory _factory = new UniswapV2Factory(_feeSetter);
-    UniswapV2Router02 _router = new UniswapV2Router02(address(_factory),_WETH);
+    StandardUniswapV2Factory _factory = new StandardUniswapV2Factory(_feeSetter);
+    StandardUniswapV2Router02 _router = new StandardUniswapV2Router02(address(_factory),_WETH);
 
     addressMap[_poolFactoryName] = address(_factory);
     addressMap[_poolRouterName] = address(_router);

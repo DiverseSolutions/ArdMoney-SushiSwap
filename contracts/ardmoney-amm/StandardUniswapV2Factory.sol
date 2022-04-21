@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
-
 pragma solidity =0.6.12;
 
 import "./interfaces/IUniswapV2Factory.sol";
-import "./UniswapV2Pair.sol";
+import "./StandardUniswapV2Pair.sol";
 
-contract UniswapV2Factory is IUniswapV2Factory {
+contract StandardUniswapV2Factory is IUniswapV2Factory {
     address public override feeTo;
     address public override feeToSetter;
     address public override migrator;
@@ -29,7 +28,7 @@ contract UniswapV2Factory is IUniswapV2Factory {
     }
 
     function pairCodeHash() external pure returns (bytes32) {
-        return keccak256(type(UniswapV2Pair).creationCode);
+        return keccak256(type(StandardUniswapV2Pair).creationCode);
     }
 
     function createPair(address tokenA, address tokenB)
@@ -46,12 +45,12 @@ contract UniswapV2Factory is IUniswapV2Factory {
             getPair[token0][token1] == address(0),
             "UniswapV2: PAIR_EXISTS"
         ); // single check is sufficient
-        bytes memory bytecode = type(UniswapV2Pair).creationCode;
+        bytes memory bytecode = type(StandardUniswapV2Pair).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(token0, token1));
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        UniswapV2Pair(pair).initialize(token0, token1);
+        StandardUniswapV2Pair(pair).initialize(token0, token1);
         getPair[token0][token1] = pair;
         getPair[token1][token0] = pair; // populate mapping in the reverse direction
         allPairs.push(pair);

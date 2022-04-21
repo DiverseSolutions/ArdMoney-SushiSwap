@@ -4,7 +4,7 @@ pragma solidity =0.6.12;
 
 import "./libraries/SafeMath.sol";
 
-contract UniswapV2ERC20 {
+contract StandardUniswapV2ERC20 {
     using SafeMathUniswap for uint256;
 
     string public constant name = "SushiSwap LP Token";

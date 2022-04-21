@@ -10,7 +10,7 @@ import "./interfaces/IUniswapV2Factory.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/IWETH.sol";
 
-contract UniswapV2Router02 is IUniswapV2Router02 {
+contract StandardUniswapV2Router02 is IUniswapV2Router02 {
     using SafeMathUniswap for uint256;
 
     address public immutable override factory;
