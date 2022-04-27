@@ -98,7 +98,7 @@ describe("UniswapV2Factory", () => {
   });
 });
 
-export interface FactoryFixture {
+interface FactoryFixture {
   factory: Contract;
 }
 
