@@ -56,6 +56,13 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    mumbai: {
+      url: process.env.MUMBAI_TESTNET_URL,
+      chainId: 80001,
+      accounts: {
+        mnemonic : process.env.MNEMONIC,
+      }
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

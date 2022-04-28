@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
+import "../interfaces/IERC20.sol";
+
 pragma solidity >=0.6.0;
 
 // helper methods for interacting with ERC20 tokens and sending ETH that do not consistently return true/false
 library TransferHelper {
     function safeApprove(address token, address to, uint value) internal {
-        // bytes4(keccak256(bytes('approve(address,uint256)')));
+        bytes4(keccak256(bytes('approve(address,uint256)')));
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x095ea7b3, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: APPROVE_FAILED');
     }
@@ -17,9 +19,15 @@ library TransferHelper {
     }
 
     function safeTransferFrom(address token, address from, address to, uint value) internal {
-        // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
-        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
-        require(success && (data.length == 0 || abi.decode(data, (bool))), 'TransferHelper: TRANSFER_FROM_FAILED');
+      bool success = IERC20Uniswap(token).transferFrom(from,to,value);
+      require(success == true,'TransferHelper::transferFrom: transferFrom failed');
+
+      // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
+      // (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872de, from, to, value));
+      // require(
+      //     success && (data.length == 0 || abi.decode(data, (bool))),
+      //     'TransferHelper::transferFrom: transferFrom failed'
+      // );
     }
 
     function safeTransferETH(address to, uint value) internal {
