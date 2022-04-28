@@ -25,11 +25,13 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     address public factory;
     address public token0;
     address public token1;
+    address public admin;
 
     uint112 private reserve0; // uses single storage slot, accessible via getReserves
     uint112 private reserve1; // uses single storage slot, accessible via getReserves
     uint32 private blockTimestampLast; // uses single storage slot, accessible via getReserves
 
+    uint256 public swapFee;  // 3 = 0.3% 
     uint256 public price0CumulativeLast;
     uint256 public price1CumulativeLast;
     uint256 public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
@@ -46,8 +48,8 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         public
         view
         returns (
-            uint112 _reserve0,
-            uint112 _reserve1,
+            uint112 _reserve0, //1000
+            uint112 _reserve1, //100
             uint32 _blockTimestampLast
         )
     {
@@ -87,8 +89,28 @@ contract UniswapV2Pair is UniswapV2ERC20 {
     );
     event Sync(uint112 reserve0, uint112 reserve1);
 
-    constructor() public {
+    constructor(uint256 _swapFee, address _admin) public {
         factory = msg.sender;
+        swapFee = _swapFee; 
+        admin = _admin;
+    }
+
+    function getAdmin() public returns(address) {
+        return admin;
+    }
+
+    function setAdmin(address _admin) private {
+        require(msg.sender == admin, "You need to be an admin to make changes");
+        admin = _admin;
+    }
+
+    function getSwapFee() public external  returns (uint256){
+        return swapFee;
+    }
+
+    function setSwapFee(uint256 _swapFee) private {
+        require(msg.sender == admin, "You need to be an admin to make changes");
+        swapFee = _swapFee;
     }
 
     // called once by the factory at time of deployment
@@ -136,12 +158,12 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         uint256 _kLast = kLast; // gas savings
         if (feeOn) {
             if (_kLast != 0) {
-                uint256 rootK = Math.sqrt(uint256(_reserve0).mul(_reserve1));
-                uint256 rootKLast = Math.sqrt(_kLast);
+                uint256 rootK = Math.sqrt(uint256(_reserve0).mul(_reserve1)); //1000
+                uint256 rootKLast = Math.sqrt(_kLast); //800
                 if (rootK > rootKLast) {
-                    uint256 numerator = totalSupply.mul(rootK.sub(rootKLast));
-                    uint256 denominator = rootK.mul(5).add(rootKLast);
-                    uint256 liquidity = numerator / denominator;
+                    uint256 numerator = totalSupply.mul(rootK.sub(rootKLast));  //10000*(1000-800)= 10000*200
+                    uint256 denominator = rootK.mul(5).add(rootKLast); // 1000*5+800
+                    uint256 liquidity = numerator / denominator; // 2000000/5800 = 344.8
                     if (liquidity > 0) _mint(feeTo, liquidity);
                 }
             }
@@ -269,8 +291,8 @@ contract UniswapV2Pair is UniswapV2ERC20 {
         );
         {
             // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-            uint256 balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
-            uint256 balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
+            uint256 balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(getSwapFee()));
+            uint256 balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(getSwapFee()));
             require(
                 balance0Adjusted.mul(balance1Adjusted) >=
                     uint256(_reserve0).mul(_reserve1).mul(1000**2),

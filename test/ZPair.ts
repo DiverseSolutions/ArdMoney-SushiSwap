@@ -1,106 +1,105 @@
-import { AddressZero } from "@ethersproject/constants";
-import { Web3Provider } from "@ethersproject/providers";
-import { expect } from "chai";
-import { BigNumber, Contract, Wallet } from "ethers";
-import { waffle } from "hardhat";
-import ERC20 from "./../build/contracts/uniswapv2/test/ERC20.sol/ERC20.json";
-import UniswapV2Pair from "./../build/contracts/uniswapv2/UniswapV2Pair.sol/UniswapV2Pair.json";
-import { FactoryFixture, factoryFixture } from "./UniswapV2Factory.spec";
+import { expect } from 'chai'
+import { MockProvider } from 'ethereum-waffle'
+import { BigNumber, Contract } from 'ethers'
+import { waffle } from 'hardhat'
+import ERC20 from '../build/contracts/uniswapv2/test/ERC20.sol/ERC20.json'
+import UniswapV2Factory from '../build/contracts/uniswapv2/UniswapV2Factory.sol/UniswapV2Factory.json'
+import UniswapV2Pair from '../build/contracts/uniswapv2/UniswapV2Pair.sol/UniswapV2Pair.json'
 
-const { deployContract } = waffle;
+const { deployContract } = waffle
 
-const MINIMUM_LIQUIDITY = BigNumber.from(10).pow(3);
+const AddressZero = '0x0000000000000000000000000000000000000000'
+const MINIMUM_LIQUIDITY = BigNumber.from(10).pow(3)
 
 const overrides = {
   gasLimit: 9999999,
-};
+}
 
-describe("UniswapV2Pair", () => {
-  const provider = waffle.provider;
-  const [wallet, other] = provider.getWallets();
+describe('ZPair', () => {
+  const provider = waffle.provider
+  const [wallet, other] = provider.getWallets()
 
-  const loadFixture = waffle.createFixtureLoader([wallet, other], provider);
+  let factory: Contract
+  let token0: Contract
+  let token1: Contract
+  let pair: Contract
 
-  let factory: Contract;
-  let token0: Contract;
-  let token1: Contract;
-  let pair: Contract;
   beforeEach(async () => {
-    const fixture = await loadFixture(pairFixture);
-    factory = fixture.factory;
-    token0 = fixture.token0;
-    token1 = fixture.token1;
-    pair = fixture.pair;
-  });
+    factory = await deployContract(wallet, UniswapV2Factory, [wallet.address], overrides)
 
-  it("mint", async () => {
-    const token0Amount = expandTo18Decimals(1);
-    const token1Amount = expandTo18Decimals(4);
-    await token0.transfer(pair.address, token0Amount);
-    await token1.transfer(pair.address, token1Amount);
+    const tokenA = await deployContract(wallet, ERC20, [expandTo18Decimals(10000)], overrides)
+    const tokenB = await deployContract(wallet, ERC20, [expandTo18Decimals(10000)], overrides)
 
-    const expectedLiquidity = expandTo18Decimals(2);
+    await factory.createPair(tokenA.address, tokenB.address, overrides)
+    const pairAddress = await factory.getPair(tokenA.address, tokenB.address)
+    pair = new Contract(pairAddress, JSON.stringify(UniswapV2Pair.abi), provider).connect(wallet)
+
+    const token0Address = (await pair.token0()).address
+    token0 = tokenA.address === token0Address ? tokenA : tokenB
+    token1 = tokenA.address === token0Address ? tokenB : tokenA
+  })
+
+  it('mint', async () => {
+    const token0Amount = expandTo18Decimals(1)
+    const token1Amount = expandTo18Decimals(4)
+    await token0.transfer(pair.address, token0Amount)
+    await token1.transfer(pair.address, token1Amount)
+
+    const expectedLiquidity = expandTo18Decimals(2)
+
     await expect(pair.mint(wallet.address, overrides))
-      .to.emit(pair, "Transfer")
+      .to.emit(pair, 'Transfer')
       .withArgs(AddressZero, AddressZero, MINIMUM_LIQUIDITY)
-      .to.emit(pair, "Transfer")
+      .to.emit(pair, 'Transfer')
       .withArgs(AddressZero, wallet.address, expectedLiquidity.sub(MINIMUM_LIQUIDITY))
-      .to.emit(pair, "Sync")
-      .withArgs(token1Amount, token0Amount)
-      .to.emit(pair, "Mint")
+      .to.emit(pair, 'Sync')
+      .withArgs(token0Amount, token1Amount)
+      .to.emit(pair, 'Mint')
       .withArgs(wallet.address, token0Amount, token1Amount)
 
-    // expect(await pair.totalSupply()).to.eq(expectedLiquidity);
-    // expect(await pair.balanceOf(wallet.address)).to.eq(expectedLiquidity.sub(MINIMUM_LIQUIDITY));
-    // expect(await token0.balanceOf(pair.address)).to.eq(token0Amount);
-    // expect(await token1.balanceOf(pair.address)).to.eq(token1Amount);
-    const reserves = await pair.getReserves();
-    console.log('galaa', reserves)
-    expect(reserves[0]).to.eq(token0Amount);
-    expect(reserves[1]).to.eq(token1Amount);
-  });
+    expect(await pair.totalSupply()).to.eq(expectedLiquidity)
+    expect(await pair.balanceOf(wallet.address)).to.eq(expectedLiquidity.sub(MINIMUM_LIQUIDITY))
+    expect(await token0.balanceOf(pair.address)).to.eq(token0Amount)
+    expect(await token1.balanceOf(pair.address)).to.eq(token1Amount)
+    const reserves = await pair.getReserves()
+    expect(reserves[0]).to.eq(token0Amount)
+    expect(reserves[1]).to.eq(token1Amount)
+  })
 
-  // async function addLiquidity(
-  //   token0Amount: BigNumber,
-  //   token1Amount: BigNumber
-  // ) {
-  //   await token0.transfer(pair.address, token0Amount);
-  //   await token1.transfer(pair.address, token1Amount);
-  //   await pair.mint(wallet.address, overrides);
-  // }
-  // const swapTestCases: BigNumber[][] = [
-  //   [1, 5, 10, "1662497915624478906"],
-  //   [1, 10, 5, "453305446940074565"],
+  async function addLiquidity(token0Amount: BigNumber, token1Amount: BigNumber) {
+    await token0.transfer(pair.address, token0Amount)
+    await token1.transfer(pair.address, token1Amount)
+    await pair.mint(wallet.address, overrides)
+  }
+  const swapTestCases: BigNumber[][] = [
+    [1, 5, 10, '1662497915624478906'],
+    [1, 10, 5, '453305446940074565'],
 
-  //   [2, 5, 10, "2851015155847869602"],
-  //   [2, 10, 5, "831248957812239453"],
+    // [2, 5, 10, "2851015155847869602"],
+    // [2, 10, 5, "831248957812239453"],
 
-  //   [1, 10, 10, "906610893880149131"],
-  //   [1, 100, 100, "987158034397061298"],
-  //   [1, 1000, 1000, "996006981039903216"],
-  // ].map((a) =>
-  //   a.map((n) =>
-  //     typeof n === "string" ? BigNumber.from(n) : expandTo18Decimals(n)
-  //   )
-  // );
-  // swapTestCases.forEach((swapTestCase, i) => {
-  //   it(`getInputPrice:${i}`, async () => {
-  //     const [swapAmount, token0Amount, token1Amount, expectedOutputAmount] =
-  //       swapTestCase;
-  //     await addLiquidity(token0Amount, token1Amount);
-  //     await token0.transfer(pair.address, swapAmount);
-  //     await expect(
-  //       pair.swap(
-  //         0,
-  //         expectedOutputAmount.add(1),
-  //         wallet.address,
-  //         "0x",
-  //         overrides
-  //       )
-  //     ).to.be.revertedWith("UniswapV2: K");
-  //     await pair.swap(0, expectedOutputAmount, wallet.address, "0x", overrides);
-  //   });
-  // });
+    // [1, 10, 10, "906610893880149131"],
+    // [1, 100, 100, "987158034397061298"],
+    // [1, 1000, 1000, "996006981039903216"],
+  ].map((a) => a.map((n) => (typeof n === 'string' ? BigNumber.from(n) : expandTo18Decimals(n))))
+  swapTestCases.forEach((swapTestCase, i) => {
+    it(`getInputPrice:${i}`, async () => {
+      const [swapAmount, token0Amount, token1Amount, expectedOutputAmount] = swapTestCase
+      // console.log(
+      //   "galaa",
+      //   test(swapAmount),
+      //   test(token0Amount),
+      //   test(token1Amount),
+      //   test(expectedOutputAmount)
+      // );
+      await addLiquidity(token0Amount, token1Amount)
+      await token0.transfer(pair.address, swapAmount)
+      await expect(pair.swap(0, expectedOutputAmount.add(1), wallet.address, '0x', overrides)).to.be.revertedWith(
+        'UniswapV2: K'
+      )
+      await pair.swap(0, expectedOutputAmount, wallet.address, '0x', overrides)
+    })
+  })
 
   // const optimisticTestCases: BigNumber[][] = [
   //   ["997000000000000000", 5, 10, 1], // given amountIn, amountOut = floor(amountIn * .997)
@@ -373,57 +372,28 @@ describe("UniswapV2Pair", () => {
   //     BigNumber.from(1000).add("250000187312969")
   //   );
   // });
-});
-
-export async function pairFixture([wallet]: Wallet[], provider: Web3Provider): Promise<PairFixture> {
-  const { factory } = await factoryFixture([wallet], provider);
-
-  const tokenA = await deployContract(wallet, ERC20, [expandTo18Decimals(10000)], overrides);
-  const tokenB = await deployContract(wallet, ERC20, [expandTo18Decimals(10000)], overrides);
-
-  await factory.createPair(tokenA.address, tokenB.address, overrides);
-  const pairAddress = await factory.getPair(tokenA.address, tokenB.address);
-  const pair = new Contract(pairAddress, JSON.stringify(UniswapV2Pair.abi), provider).connect(wallet);
-
-  const token0Address = (await pair.token0()).address;
-  const token0 = tokenA.address === token0Address ? tokenA : tokenB;
-  const token1 = tokenA.address === token0Address ? tokenB : tokenA;
-
-  return { factory, token0, token1, pair };
-}
-
-interface PairFixture extends FactoryFixture {
-  token0: Contract;
-  token1: Contract;
-  pair: Contract;
-}
+})
 
 export function expandTo18Decimals(n: number): BigNumber {
-  return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
+  return BigNumber.from(n).mul(BigNumber.from(10).pow(18))
 }
 
-export async function mineBlock(provider: Web3Provider, timestamp: number): Promise<void> {
-  await new Promise(async (resolve, reject) => {
-    provider.send("evm_mine", [timestamp]).then(
-      (res) => resolve(res),
-      (err) => reject(err)
-    );
-    // (provider._web3Provider.sendAsync as any)(
-    //   { jsonrpc: "2.0", method: "evm_mine", params: [timestamp] },
-    //   (error: any, result: any): void => {
-    //     if (error) {
-    //       reject(error);
-    //     } else {
-    //       resolve(result);
-    //     }
-    //   }
-    // );
-  });
+export function test(n: BigNumber): number {
+  return n.div(BigNumber.from(10).pow(18)).toNumber()
 }
 
 export function encodePrice(reserve0: BigNumber, reserve1: BigNumber) {
   return [
     reserve1.mul(BigNumber.from(2).pow(112)).div(reserve0),
     reserve0.mul(BigNumber.from(2).pow(112)).div(reserve1),
-  ];
+  ]
+}
+
+export async function mineBlock(provider: MockProvider, timestamp: number): Promise<void> {
+  await new Promise(async (resolve, reject) => {
+    provider.send('evm_mine', [timestamp]).then(
+      (res) => resolve(res),
+      (err) => reject(err)
+    )
+  })
 }
