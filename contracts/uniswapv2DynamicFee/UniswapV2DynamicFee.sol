@@ -2,23 +2,22 @@
 
 pragma solidity =0.6.12;
 
-contract UniswapV2DynamicFee is UniswapV2DynamicFee {
+import "./interfaces/IUniswapV2DynamicFee.sol";
+import "./UniswapV2ERC20.sol";
+
+
+contract UniswapV2DynamicFee is IUniswapV2DynamicFee {
     using SafeMathUniswap for uint256;
 
     address public admin;
     uint256 public swapFee;  // 3 = 0.3% 
-
-    modifier ensure(uint256 deadline) {
-        require(deadline >= block.timestamp, "UniswapV2Router: EXPIRED");
-        _;
-    }
 
     constructor(uint256 _swapFee, address _admin) public {
         swapFee = _swapFee; 
         admin = _admin;
     }
 
-        function getAdmin() public returns(address) {
+        function getAdmin() public override returns(address) {
         return admin;
     }
 
@@ -27,7 +26,7 @@ contract UniswapV2DynamicFee is UniswapV2DynamicFee {
         admin = _admin;
     }
 
-    function getSwapFee() public external  returns (uint256){
+    function getSwapFee() public override returns (uint256){
         return swapFee;
     }
 
