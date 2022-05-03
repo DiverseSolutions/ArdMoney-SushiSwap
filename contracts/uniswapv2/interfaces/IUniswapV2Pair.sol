@@ -44,11 +44,6 @@ interface IUniswapV2Pair {
     function price1CumulativeLast() external view returns (uint);
     function kLast() external view returns (uint);
 
-    function getAdmin() external returns(address);
-    function setAdmin(address) external;
-    function getSwapFee(address) external returns(uint256);
-    function setSwapFee(address) external;
-
     function mint(address to) external returns (uint liquidity);
     function burn(address to) external returns (uint amount0, uint amount1);
     function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;

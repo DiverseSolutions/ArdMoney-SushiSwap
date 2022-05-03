@@ -3,6 +3,7 @@
 pragma solidity >=0.5.0;
 
 import "../interfaces/IUniswapV2Pair.sol";
+import "../interfaces/IUniswapV2DynamicFee.sol";
 
 import "./SafeMath.sol";
 
@@ -84,7 +85,7 @@ library UniswapV2Library {
             reserveIn > 0 && reserveOut > 0,
             "UniswapV2Library: INSUFFICIENT_LIQUIDITY"
         );
-        uint256 swapFee = IUniswapV2Pair().getSwapFee();
+        uint256 swapFee = IUniswapV2DynamicFee().getSwapFee();
         uint256 amountInWithFee = amountIn.mul(sub(1000, swapfee)); // 99700 =  100 * 997
         uint256 numerator = amountInWithFee.mul(reserveOut); // 9970000 = 99700 * 100
         uint256 denominator = reserveIn.mul(1000).add(amountInWithFee); // 1000997 = 1000 * 1000 + 997
@@ -103,7 +104,7 @@ library UniswapV2Library {
             reserveIn > 0 && reserveOut > 0,
             "UniswapV2Library: INSUFFICIENT_LIQUIDITY"
         );
-        uint256 swapFee = IUniswapV2Pair().getSwapFee();
+        uint256 swapFee = IUniswapV2DynamicFee().getSwapFee();
         uint256 numerator = reserveIn.mul(amountOut).mul(1000); // 10000000 = 1000 * 10 * 1000
         uint256 denominator = reserveOut.sub(amountOut).mul(sub(1000, swapfee)); // 89730 = (100 - 10) * 997
         amountIn = (numerator / denominator).add(1); // 112.44 = (10000000 / 89730) + 1
