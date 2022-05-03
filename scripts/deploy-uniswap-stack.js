@@ -3,7 +3,7 @@ const hre = require("hardhat");
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const wrappedETH = "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"
+  const wrappedETH = "0x86652c1301843B4E06fBfbBDaA6849266fb2b5e7"
 
   const Factory = await hre.ethers.getContractFactory("UniswapV2Factory");
   const factoryContract = await Factory.deploy(owner.address);
