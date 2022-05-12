@@ -8,19 +8,29 @@ const {
 } = require('./helpers.js');
 
 describe("ArdMoney Create Pool", function () {
+  let owner,odko,amaraa,feeSetter,routerAdmin;
+  let factory,router,weth;
+  let tokenA,tokenB;
 
-  it("Create Dynamic Pool", async function () {
-    const [owner,odko,amaraa,feeSetter,routerAdmin] = await ethers.getSigners();
+  // 100% == 1000 || 3% == 30 || 0.3% == 3
+  let swapFee;
+  let mintFee;
 
-    // 100% == 1000 || 3% == 30 || 0.3% == 3
-    let swapFee = 3;
-    let mintFee = 3;
+  this.beforeEach(async function (){
+    [owner,odko,amaraa,feeSetter,routerAdmin] = await ethers.getSigners();
 
-    let [ factory,router,weth ] = await initializeArdMoneyContracts( feeSetter.address, routerAdmin.address, swapFee, mintFee)
-    let [ tokenA,tokenB ] = await initializeDummyTokens()
+    swapFee = 3;
+    mintFee = 3;
+
+    [ factory,router,weth ] = await initializeArdMoneyContracts( feeSetter.address, routerAdmin.address, swapFee, mintFee);
+    [ tokenA,tokenB ] = await initializeDummyTokens();
 
     await tokenMint(tokenA,'1000',odko.address,owner)
     await tokenMint(tokenB,'1000',odko.address,owner)
+
+  })
+
+  it("Create Dynamic Pool", async function () {
 
     // Create Liquidity
     await approveToken(router,tokenA,'100',odko)

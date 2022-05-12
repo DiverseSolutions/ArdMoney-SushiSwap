@@ -8,38 +8,49 @@ const {
 } = require('./helpers.js');
 
 describe("ArdMoney Swap Dynamic Pool", function () {
+  const fakeDeadline = 2648035579;
 
-  it("Swap Dynamic Pool", async function () {
-    const [owner,odko,amaraa,feeSetter,routerAdmin] = await ethers.getSigners();
+  let owner,odko,amaraa,feeSetter,routerAdmin;
+  let factory,router,weth;
+  let tokenA,tokenB;
 
-    // 100% == 1000 || 3% == 30 || 0.3% == 3
-    let swapFee = 3;
-    let mintFee = 3;
+  // 100% == 1000 || 3% == 30 || 0.3% == 3
+  let swapFee;
+  let mintFee;
 
-    let fakeDeadline = 2648035579
+  this.beforeEach(async function (){
+    [owner,odko,amaraa,feeSetter,routerAdmin] = await ethers.getSigners();
 
-    let [ factory,router,weth ] = await initializeArdMoneyContracts( feeSetter.address, routerAdmin.address, swapFee, mintFee)
-    let [ tokenA,tokenB ] = await initializeDummyTokens()
+    swapFee = 3;
+    mintFee = 3;
 
-    await tokenMint(tokenA,'5000',odko.address,owner)
-    await tokenMint(tokenB,'5000',odko.address,owner)
+    [ factory,router,weth ] = await initializeArdMoneyContracts( feeSetter.address, routerAdmin.address, swapFee, mintFee);
+    [ tokenA,tokenB ] = await initializeDummyTokens();
+
+    await tokenMint(tokenA,'2000',amaraa.address,owner)
+
+    await tokenMint(tokenA,'1000',odko.address,owner)
+    await tokenMint(tokenB,'1000',odko.address,owner)
+
 
     // Create Liquidity
-    await approveToken(router,tokenA,'500',odko)
-    await approveToken(router,tokenB,'500',odko)
+    await approveToken(router,tokenA,'100',odko)
+    await approveToken(router,tokenB,'100',odko)
 
     await router.connect(odko).addLiquidity(
       tokenA.address,
       tokenB.address,
-      ethers.utils.parseUnits('500',18),
-      ethers.utils.parseUnits('500',18),
+      ethers.utils.parseUnits('100',18),
+      ethers.utils.parseUnits('100',18),
       1,
       1,
       odko.address,
-      fakeDeadline
+      fakeDeadline 
     )
 
-    await tokenMint(tokenA,'2000',amaraa.address,owner)
+  })
+
+  it("Swap Dynamic Pool", async function () {
 
     await approveToken(router,tokenA,'100',amaraa)
     let amountInWei = ethers.utils.parseEther('100',18)
@@ -56,11 +67,8 @@ describe("ArdMoney Swap Dynamic Pool", function () {
     )
 
     let amaraaBalance = await tokenB.balanceOf(amaraa.address)
-    console.log(amaraaBalance)
-    console.log(amountsOutWei)
+
     expect(amaraaBalance).to.equal(amountsOutWei);
-
-
   });
 
 });
