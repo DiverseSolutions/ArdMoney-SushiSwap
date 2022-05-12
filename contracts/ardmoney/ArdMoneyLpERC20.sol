@@ -2,10 +2,10 @@
 
 pragma solidity =0.6.12;
 
-import "./libraries/SafeMath.sol";
+import "./libraries/ArdMoneySafeMath.sol";
 
-contract UniswapV2ERC20 {
-    using SafeMathUniswap for uint256;
+contract ArdMoneyLpERC20 {
+    using ArdMoneySafeMath for uint256;
 
     string public constant name = "ArdMoney LP";
     string public constant symbol = "ARDMLP";
@@ -109,7 +109,7 @@ contract UniswapV2ERC20 {
         bytes32 r,
         bytes32 s
     ) external {
-        require(deadline >= block.timestamp, "UniswapV2: EXPIRED");
+        require(deadline >= block.timestamp, "ArdMoney: EXPIRED");
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
@@ -129,7 +129,7 @@ contract UniswapV2ERC20 {
         address recoveredAddress = ecrecover(digest, v, r, s);
         require(
             recoveredAddress != address(0) && recoveredAddress == owner,
-            "UniswapV2: INVALID_SIGNATURE"
+            "ArdMoney: INVALID_SIGNATURE"
         );
         _approve(owner, spender, value);
     }
