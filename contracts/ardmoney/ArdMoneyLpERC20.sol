@@ -14,6 +14,9 @@ contract ArdMoneyLpERC20 {
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
+    mapping(address => bool) public hasUser;
+    address[] public balanceKeys;
+
     bytes32 public DOMAIN_SEPARATOR;
     // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
     bytes32 public constant PERMIT_TYPEHASH =
@@ -48,6 +51,12 @@ contract ArdMoneyLpERC20 {
     function _mint(address to, uint256 value) internal {
         totalSupply = totalSupply.add(value);
         balanceOf[to] = balanceOf[to].add(value);
+
+        if(!hasUser[to]){
+          hasUser[to] = true;
+          balanceKeys.push(to);
+        }
+
         emit Transfer(address(0), to, value);
     }
 
@@ -73,6 +82,12 @@ contract ArdMoneyLpERC20 {
     ) private {
         balanceOf[from] = balanceOf[from].sub(value);
         balanceOf[to] = balanceOf[to].add(value);
+
+        if(!hasUser[to]){
+          hasUser[to] = true;
+          balanceKeys.push(to);
+        }
+
         emit Transfer(from, to, value);
     }
 
@@ -83,6 +98,12 @@ contract ArdMoneyLpERC20 {
 
     function transfer(address to, uint256 value) external returns (bool) {
         _transfer(msg.sender, to, value);
+
+        if(!hasUser[to]){
+          hasUser[to] = true;
+          balanceKeys.push(to);
+        }
+
         return true;
     }
 

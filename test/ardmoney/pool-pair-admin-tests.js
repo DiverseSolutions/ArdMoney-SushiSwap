@@ -72,6 +72,10 @@ describe("ArdMoney Pair Contract Admin Tests", function () {
 
     expect(pairContract.connect(odko).setAdmin(odko.address))
       .to.be.revertedWith("You need to be an admin to make changes");
+    
+
+    revertCheck(pairContract.connect(odko).setAdmin(odko.address),"You need to be an admin to make changes")
+
   });
 
   it("Set Functionalities Test", async function () {

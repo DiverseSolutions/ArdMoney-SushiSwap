@@ -6,6 +6,8 @@ import "./ArdMoneyLpERC20.sol";
 
 import "./libraries/ArdMoneyMath.sol";
 import "./libraries/ArdMoneyUQ112x112.sol";
+import "./libraries/ArdMoneyPausible.sol";
+
 import "./interfaces/IArdMoneyERC20.sol";
 import "./interfaces/IArdMoneyFactory.sol";
 import "./interfaces/IArdMoneyCallee.sol";
@@ -15,9 +17,11 @@ interface IArdMoneyMigrator {
     function desiredLiquidity() external view returns (uint256);
 }
 
-contract ArdMoneyPair is ArdMoneyLpERC20 {
+contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     using ArdMoneySafeMath for uint256;
     using ArdMoneyUQ112x112 for uint224;
+
+    uint8 public constant VERSION = 1;
 
     uint256 public constant MINIMUM_LIQUIDITY = 10**3;
     bytes4 private constant SELECTOR =
@@ -342,4 +346,44 @@ contract ArdMoneyPair is ArdMoneyLpERC20 {
         require(msg.sender == admin, "You need to be an admin to make changes");
         mintFee = __mintFee;
     }
+
+    function getPoolState() view external returns (
+      address _factory,
+      address _dynamicFee,
+      address _token0,
+      address _token1,
+      address _admin,
+      uint112 _reserve0,
+      uint112 _reserve1,
+      uint32 _blockTimestampLast,
+      uint256 _price0CumulativeLast,
+      uint256 _price1CumulativeLast,
+      uint256 _kLast,
+      uint256 _swapFee,
+      uint256 _mintFee
+    ) {
+        require(msg.sender == admin, "You need to be an admin to make changes");
+
+        return (
+          factory,
+          dynamicFee,
+          token0,
+          token1,
+          admin,
+          reserve0,
+          reserve1,
+          blockTimestampLast,
+          price0CumulativeLast,
+          price1CumulativeLast,
+          kLast,
+          swapFee,
+          mintFee
+        );
+    }
+
+    function getPoolHasBalanceAddresses() external view returns (address[] memory){
+        require(msg.sender == admin, "You need to be an admin to make changes");
+        return balanceKeys;
+    }
+
 }
