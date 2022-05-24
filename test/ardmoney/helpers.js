@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 
-async function initializeDummyTokens(){
+async function initializeDummyTokens() {
   const DummyTokenA = await ethers.getContractFactory("DummyTokenA");
   const dummyTokenAContract = await DummyTokenA.deploy();
   await dummyTokenAContract.deployed();
@@ -9,10 +9,20 @@ async function initializeDummyTokens(){
   const dummyTokenBContract = await DummyTokenB.deploy();
   await dummyTokenBContract.deployed();
 
-  return [dummyTokenAContract,dummyTokenBContract] 
+  return [dummyTokenAContract, dummyTokenBContract];
 }
 
-async function initializeArdMoneyContracts(feeSetterAddress,routerAdminAddress,swapFee,mintFee){
+// async function initializeArdMoneyFarmContracts(routerAdminAddress, swapFee, mintFee) {
+//   const ArdMoneyMasterChef = await ethers.getContractFactory("ArdMoneyMasterChef");
+//   const ArdMoneyMasterChefContract = await ArdMoneyMasterChef.deploy(feeSetterAddress);
+//   await ArdMoneyMasterChefContract.deployed();
+
+//   const ArdMoneyMasterChefV2 = await ethers.getContractFactory("ArdMoneyMasterChefV2");
+//   const ArdMoneyMasterChefV2Contract = await ArdMoneyMasterChefV2.deploy(feeSetterAddress);
+//   await ArdMoneyMasterChefV2Contract.deployed();
+// }
+
+async function initializeArdMoneyContracts(feeSetterAddress, routerAdminAddress, swapFee, mintFee) {
   const WETH9Mock = await ethers.getContractFactory("WETH9Mock");
   const wETHContract = await WETH9Mock.deploy();
   await wETHContract.deployed();
@@ -27,44 +37,45 @@ async function initializeArdMoneyContracts(feeSetterAddress,routerAdminAddress,s
     wETHContract.address,
     routerAdminAddress,
     swapFee,
-    mintFee,
+    mintFee
   );
 
   await ardMoneyRouterContract.deployed();
 
-  return [ardMoneyFactoryContract,ardMoneyRouterContract,wETHContract]
+  return [ardMoneyFactoryContract, ardMoneyRouterContract, wETHContract];
 }
 
-async function approveToken(router,token,amount,account){
-  let oldAllowance = await token.allowance(account.address,router.address)
-  let decimals = await token.decimals()
-  let amountWei = ethers.utils.parseEther(amount,decimals)
 
-  await ( await token.connect(account).approve(router.address,amountWei) ).wait()
+async function approveToken(router, token, amount, account) {
+  let oldAllowance = await token.allowance(account.address, router.address);
+  let decimals = await token.decimals();
+  let amountWei = ethers.utils.parseEther(amount, decimals);
 
-  let newAllowance = await token.allowance(account.address,router.address)
-  let amountToAddWEI = ethers.utils.parseUnits(amount,decimals)
+  await (await token.connect(account).approve(router.address, amountWei)).wait();
+
+  let newAllowance = await token.allowance(account.address, router.address);
+  let amountToAddWEI = ethers.utils.parseUnits(amount, decimals);
 
   expect(oldAllowance.add(amountToAddWEI)).to.equal(newAllowance);
 }
 
-async function tokenMint(token,amount,to,owner){
-  let oldBalance = await token.balanceOf(to)
-  let decimals = await token.decimals()
-  let amountWei = ethers.utils.parseEther(amount,decimals)
+async function tokenMint(token, amount, to, owner) {
+  let oldBalance = await token.balanceOf(to);
+  let decimals = await token.decimals();
+  let amountWei = ethers.utils.parseEther(amount, decimals);
 
-  await ( await token.connect(owner).mint(to,amountWei) ).wait()
+  await (await token.connect(owner).mint(to, amountWei)).wait();
 
-  let newBalance = await token.balanceOf(to)
-  let amountToAddWEI = ethers.utils.parseUnits(amount,decimals)
+  let newBalance = await token.balanceOf(to);
+  let amountToAddWEI = ethers.utils.parseUnits(amount, decimals);
 
   expect(oldBalance.add(amountToAddWEI)).to.equal(newBalance);
 }
 
-
 module.exports = {
   initializeDummyTokens,
   initializeArdMoneyContracts,
+  initializeArdMoneyFarmContracts,
   approveToken,
   tokenMint,
-}
+};

@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./SushiToken.sol";
+import "./xArdmToken.sol";
 
 interface IArdMoneyMigratorChef {
     // Perform LP token migration from legacy UniswapV2 to SushiSwap.
@@ -56,7 +56,7 @@ contract ArdMoneyMasterChef is Ownable {
         uint256 accSushiPerShare; // Accumulated SUSHIs per share, times 1e12. See below.
     }
     // The SUSHI TOKEN!
-    SushiToken public sushi;
+    xArdMoneyToken public xArdMoney;
     // Dev address.
     address public devaddr;
     // Block number when bonus SUSHI period ends.
@@ -84,13 +84,13 @@ contract ArdMoneyMasterChef is Ownable {
     );
 
     constructor(
-        SushiToken _sushi,
+        xArdMoneyToken _xArdMoney,
         address _devaddr,
         uint256 _sushiPerBlock,
         uint256 _startBlock,
         uint256 _bonusEndBlock
     ) public {
-        sushi = _sushi;
+        xArdMoney = _xArdMoney;
         devaddr = _devaddr;
         sushiPerBlock = _sushiPerBlock;
         bonusEndBlock = _bonusEndBlock;
@@ -222,8 +222,8 @@ contract ArdMoneyMasterChef is Ownable {
             multiplier.mul(sushiPerBlock).mul(pool.allocPoint).div(
                 totalAllocPoint
             );
-        sushi.mint(devaddr, sushiReward.div(10));
-        sushi.mint(address(this), sushiReward);
+        xArdMoney.mint(devaddr, sushiReward.div(10));
+        xArdMoney.mint(address(this), sushiReward);
         pool.accSushiPerShare = pool.accSushiPerShare.add(
             sushiReward.mul(1e12).div(lpSupply)
         );
@@ -281,12 +281,11 @@ contract ArdMoneyMasterChef is Ownable {
 
     // Safe sushi transfer function, just in case if rounding error causes pool to not have enough SUSHIs.
     function safeSushiTransfer(address _to, uint256 _amount) internal {
-        uint256 sushiBal = sushi.balanceOf(address(this));
-        if (_amount > sushiBal) {
-            sushi.transfer(_to, sushiBal);
-            ARDM('sda).
+        uint256 xArdMoneyBal = xArdMoney.balanceOf(address(this));
+        if (_amount > xArdMoneyBal) {
+            xArdMoney.transfer(_to, xArdMoneyBal);
         } else {
-            sushi.transfer(_to, _amount);
+            xArdMoney.transfer(_to, _amount);
         }
     }
 
