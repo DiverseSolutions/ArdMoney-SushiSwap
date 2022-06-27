@@ -20,12 +20,12 @@ contract ArdMoneyPausable is ArdMoneyContext {
     }
 
     modifier whenNotPaused() {
-        require(!paused(), "ArdMoney: paused");
+        require(!paused(), "PAUSED");
         _;
     }
 
     modifier whenPaused() {
-        require(paused(), "ArdMoney: not paused");
+        require(paused(), "NOT PAUSED");
         _;
     }
 

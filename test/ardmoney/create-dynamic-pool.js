@@ -12,6 +12,7 @@ describe("ArdMoney Create Pool", function () {
   let factory,router,weth;
   let tokenA,tokenB;
 
+
   // 100% == 1000 || 3% == 30 || 0.3% == 3
   let swapFee;
   let mintFee;
@@ -25,25 +26,25 @@ describe("ArdMoney Create Pool", function () {
     [ factory,router,weth ] = await initializeArdMoneyContracts( feeSetter.address, routerAdmin.address, swapFee, mintFee);
     [ tokenA,tokenB ] = await initializeDummyTokens();
 
-    await tokenMint(tokenA,'1000',odko.address,owner)
-    await tokenMint(tokenB,'1000',odko.address,owner)
+    await tokenMint(tokenA,'1000',feeSetter.address,owner)
+    await tokenMint(tokenB,'1000',feeSetter.address,owner)
 
   })
 
   it("Create Dynamic Pool", async function () {
 
     // Create Liquidity
-    await approveToken(router,tokenA,'100',odko)
-    await approveToken(router,tokenB,'100',odko)
+    await approveToken(router,tokenA,'100',feeSetter)
+    await approveToken(router,tokenB,'100',feeSetter)
 
-    await router.connect(odko).addLiquidity(
+    await router.connect(feeSetter).addLiquidity(
       tokenA.address,
       tokenB.address,
       ethers.utils.parseUnits('100',18),
       ethers.utils.parseUnits('100',18),
       1,
       1,
-      odko.address,
+      feeSetter.address,
       2648035579
     )
 

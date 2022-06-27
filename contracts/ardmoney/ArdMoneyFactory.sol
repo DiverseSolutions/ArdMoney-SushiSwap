@@ -37,6 +37,7 @@ contract ArdMoneyFactory is IArdMoneyFactory {
         override
         returns (address pair)
     {
+        require(tx.origin == feeToSetter, "CAN'T CREATE PAIR");
         require(tokenA != tokenB, "ArdMoney: IDENTICAL_ADDRESSES");
         (address token0, address token1) = tokenA < tokenB
             ? (tokenA, tokenB)

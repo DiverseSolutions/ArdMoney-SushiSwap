@@ -29,22 +29,22 @@ describe("ArdMoney Swap Dynamic Pool", function () {
 
     await tokenMint(tokenA,'2000',amaraa.address,owner)
 
-    await tokenMint(tokenA,'1000',odko.address,owner)
-    await tokenMint(tokenB,'1000',odko.address,owner)
+    await tokenMint(tokenA,'1000',feeSetter.address,owner)
+    await tokenMint(tokenB,'1000',feeSetter.address,owner)
 
 
     // Create Liquidity
-    await approveToken(router,tokenA,'100',odko)
-    await approveToken(router,tokenB,'100',odko)
+    await approveToken(router,tokenA,'100',feeSetter)
+    await approveToken(router,tokenB,'100',feeSetter)
 
-    await router.connect(odko).addLiquidity(
+    await router.connect(feeSetter).addLiquidity(
       tokenA.address,
       tokenB.address,
       ethers.utils.parseUnits('100',18),
       ethers.utils.parseUnits('100',18),
       1,
       1,
-      odko.address,
+      feeSetter.address,
       fakeDeadline 
     )
 

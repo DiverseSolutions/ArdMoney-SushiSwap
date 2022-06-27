@@ -163,7 +163,7 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     }
 
     // this low-level function should be called from a contract which performs important safety checks
-    function mint(address to) external lock returns (uint256 liquidity) {
+    function mint(address to) external lock whenNotPaused returns (uint256 liquidity) {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         uint256 balance0 = IArdMoneyERC20(token0).balanceOf(address(this));
         uint256 balance1 = IArdMoneyERC20(token1).balanceOf(address(this));
@@ -205,6 +205,7 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     function burn(address to)
         external
         lock
+        whenNotPaused
         returns (uint256 amount0, uint256 amount1)
     {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
@@ -239,7 +240,7 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
         uint256 amount1Out,
         address to,
         bytes calldata data
-    ) external lock {
+    ) external whenNotPaused lock {
         require(
             amount0Out > 0 || amount1Out > 0,
             "ArdMoney: INSUFFICIENT_OUTPUT_AMOUNT"
@@ -325,7 +326,7 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     }
 
     function setAdmin(address _admin)  public {
-        require(msg.sender == admin, "You need to be an admin to make changes");
+        require(msg.sender == admin, "NOT ADMIN");
         admin = _admin;
     }
 
@@ -334,7 +335,7 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     }
 
     function setSwapFee(uint256 _swapFee) public {
-        require(msg.sender == admin, "You need to be an admin to make changes");
+        require(msg.sender == admin, "NOT ADMIN");
         swapFee = _swapFee;
     }
 
@@ -343,46 +344,22 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     }
 
     function setMintFee(uint256 __mintFee) public {
-        require(msg.sender == admin, "You need to be an admin to make changes");
+        require(msg.sender == admin, "NOT ADMIN");
         mintFee = __mintFee;
     }
 
-    function getPoolState() view external returns (
-      address _factory,
-      address _dynamicFee,
-      address _token0,
-      address _token1,
-      address _admin,
-      uint112 _reserve0,
-      uint112 _reserve1,
-      uint32 _blockTimestampLast,
-      uint256 _price0CumulativeLast,
-      uint256 _price1CumulativeLast,
-      uint256 _kLast,
-      uint256 _swapFee,
-      uint256 _mintFee
-    ) {
-        require(msg.sender == admin, "You need to be an admin to make changes");
+    function pause() public {
+        require(msg.sender == admin, "NOT ADMIN");
+        _pause();
+    }
 
-        return (
-          factory,
-          dynamicFee,
-          token0,
-          token1,
-          admin,
-          reserve0,
-          reserve1,
-          blockTimestampLast,
-          price0CumulativeLast,
-          price1CumulativeLast,
-          kLast,
-          swapFee,
-          mintFee
-        );
+    function unPause() public {
+        require(msg.sender == admin, "NOT ADMIN");
+        _unpause();
     }
 
     function getPoolHasBalanceAddresses() external view returns (address[] memory){
-        require(msg.sender == admin, "You need to be an admin to make changes");
+        require(msg.sender == admin, "NOT ADMIN");
         return balanceKeys;
     }
 

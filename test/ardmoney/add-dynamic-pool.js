@@ -17,7 +17,7 @@ describe("ArdMoney Add Pool", function () {
   let mintFee;
 
   this.beforeEach(async function (){
-    [owner,odko,amaraa,feeSetter,routerAdmin] = await ethers.getSigners();
+    [owner,odko,amaraa,feeSetter,routerAdmin,pairAdmin] = await ethers.getSigners();
 
     swapFee = 3;
     mintFee = 3;
@@ -28,19 +28,12 @@ describe("ArdMoney Add Pool", function () {
     await tokenMint(tokenA,'1000',odko.address,owner)
     await tokenMint(tokenB,'1000',odko.address,owner)
 
-    // Create Liquidity
-    await approveToken(router,tokenA,'100',odko)
-    await approveToken(router,tokenB,'100',odko)
-
-    await router.connect(odko).addLiquidity(
+    await factory.connect(feeSetter).createPair(
       tokenA.address,
       tokenB.address,
-      ethers.utils.parseUnits('100',18),
-      ethers.utils.parseUnits('100',18),
-      1,
-      1,
-      odko.address,
-      2648035579
+      mintFee,
+      swapFee,
+      pairAdmin.address
     )
 
   })
