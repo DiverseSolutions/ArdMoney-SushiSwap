@@ -348,12 +348,12 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
         mintFee = __mintFee;
     }
 
-    function pause() public {
+    function pause() external {
         require(msg.sender == admin, "NOT ADMIN");
         _pause();
     }
 
-    function unPause() public {
+    function unPause() external {
         require(msg.sender == admin, "NOT ADMIN");
         _unpause();
     }
