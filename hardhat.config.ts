@@ -56,6 +56,13 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    bsc: {
+      url: process.env.BSC_URL,
+      chainId: 56,
+      accounts: {
+        mnemonic : process.env.MNEMONIC,
+      }
+    },
     mumbai: {
       url: process.env.MUMBAI_TESTNET_URL,
       chainId: 80001,
