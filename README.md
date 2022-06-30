@@ -15,6 +15,7 @@
   - SwapFee : 0.3%
   - MintFee : 0.3%
   - ArdMoneyFactory : 0x42E66bA8D80B098F75554b061288a41d083C6348
+  - ArdMoneyFactory FeeTo Address : 0x23D4B44F92d416F3FFC75B4651B96De48616Cf20
   - ArdMoneyRouter : 0xc50c6773761090742bb321112A38dEe684e41118
 
 #### ArdMoney BSC TestNet Deployment
