@@ -12,6 +12,8 @@ import "./interfaces/IArdMoneyERC20.sol";
 import "./interfaces/IArdMoneyFactory.sol";
 import "./interfaces/IArdMoneyCallee.sol";
 
+import "hardhat/console.sol";
+
 interface IArdMoneyMigrator {
     // Return the desired amount of liquidity token that the migrator wants.
     function desiredLiquidity() external view returns (uint256);
@@ -145,11 +147,15 @@ contract ArdMoneyPair is ArdMoneyLpERC20,ArdMoneyPausable {
     {
         address feeTo = IArdMoneyFactory(factory).feeTo();
         feeOn = feeTo != address(0);
+        console.log("FeeTo On - ",feeOn);
         uint256 _kLast = kLast; // gas savings
+        console.log("kLast - ",_kLast);
         if (feeOn) {
             if (_kLast != 0) {
                 uint256 rootK = ArdMoneyMath.sqrt(uint256(_reserve0).mul(_reserve1)); //1000
                 uint256 rootKLast = ArdMoneyMath.sqrt(_kLast); //800
+                console.log("rootK - ",rootK);
+                console.log("rootKLast - ",rootKLast);
                 if (rootK > rootKLast) {
                     uint256 numerator = totalSupply.mul(rootK.sub(rootKLast));  //10000*(1000-800)= 10000*200
                     uint256 denominator = rootK.mul(mintFee).add(rootKLast); // 1000*5+800

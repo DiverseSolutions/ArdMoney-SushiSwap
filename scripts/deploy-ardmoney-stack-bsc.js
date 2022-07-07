@@ -6,7 +6,7 @@ async function main() {
   const wrappedBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
   // 100% == 1000 || 3% == 30 || 0.3% == 3
   const swapFee = 3;
-  const mintFee = 3;
+  const mintFee = 5;
 
   const Factory = await hre.ethers.getContractFactory("ArdMoneyFactory");
   const factoryContract = await Factory.deploy(owner.address);

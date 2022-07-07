@@ -4,9 +4,10 @@ const hre = require("hardhat");
 async function main() {
   const [owner] = await ethers.getSigners();
   const wrappedBNB = "0x094616F0BdFB0b526bD735Bf66Eca0Ad254ca81F"
+  // Uniswap == 997
+  const swapFee = 997;
   // 100% == 1000 || 3% == 30 || 0.3% == 3
-  const swapFee = 3;
-  const mintFee = 3;
+  const mintFee = 5;
 
   const Factory = await hre.ethers.getContractFactory("ArdMoneyFactory");
   const factoryContract = await Factory.deploy(owner.address);
