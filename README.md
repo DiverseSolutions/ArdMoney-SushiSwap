@@ -22,11 +22,11 @@
   - Owner Address : 0x23D4B44F92d416F3FFC75B4651B96De48616Cf20
   - FeeSetter Address : 0x23D4B44F92d416F3FFC75B4651B96De48616Cf20
   - WrappedBNB : 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
-  - SwapFee : 997 == 0.3%
+  - SwapFee : 0.3%
   - MintFee : 0.5%
   - ArdMoneyFactory : 0xebBf47C12f2081F96bd86aCd069d241FEcD7D1f3
   - ArdMoneyFactory FeeTo Address : 
-  - ArdMoneyRouter : 0x5FbDB2315678afecb367f032d93F642f64180aa3
+  - ArdMoneyRouter : 0x21710E02f466ee8a83B4467Bd7b0f42bdaEF7452
 
 #### ArdMoney "Test On Main BSC" Deployment
   - Owner Address : 0x23D4B44F92d416F3FFC75B4651B96De48616Cf20
