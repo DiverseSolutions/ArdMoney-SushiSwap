@@ -26,7 +26,7 @@
   - MintFee : 0.5%
   - ArdMoneyFactory : 0xebBf47C12f2081F96bd86aCd069d241FEcD7D1f3
   - ArdMoneyFactory FeeTo Address : 
-  - ArdMoneyRouter : 0x4A0c700ee5427ee9997731eF665A461E761F5d74
+  - ArdMoneyRouter : 0x5FbDB2315678afecb367f032d93F642f64180aa3
 
 #### ArdMoney "Test On Main BSC" Deployment
   - Owner Address : 0x23D4B44F92d416F3FFC75B4651B96De48616Cf20
